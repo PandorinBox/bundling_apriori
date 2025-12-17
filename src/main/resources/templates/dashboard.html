@@ -1,0 +1,38 @@
+<h2>Dashboard</h2>
+
+<p>
+    Dataset terakhir:
+    <b th:text="${datasetName}">-</b>
+</p>
+
+<ul>
+    <li>Total Transaksi:
+        <b th:text="${totalTransactions}">0</b>
+    </li>
+    <li>Total Produk Unik:
+        <b th:text="${totalProducts}">0</b>
+    </li>
+</ul>
+
+<hr>
+
+<h3>Rekomendasi Bundling Produk</h3>
+
+<div th:if="${#lists.isEmpty(bestBundling)}">
+    <p><i>Belum ada rekomendasi bundling.</i></p>
+</div>
+
+<table th:if="${!#lists.isEmpty(bestBundling)}"
+       border="1" cellpadding="4">
+    <tr>
+        <th>No</th>
+        <th>Produk A</th>
+        <th>Produk B</th>
+    </tr>
+
+    <tr th:each="b, s : ${bestBundling}">
+        <td th:text="${s.index + 1}"></td>
+        <td th:text="${b.antecedents}"></td>
+        <td th:text="${b.consequents}"></td>
+    </tr>
+</table>

@@ -1,0 +1,80 @@
+<h2>Input Dataset</h2>
+
+<form method="post" enctype="multipart/form-data">
+
+    <label>Nama Dataset</label><br>
+    <input type="text" name="datasetName" required><br><br>
+
+    <h4>Input Manual Transaksi ( Pilih 2 - 4 item / Transaksi)</h4>
+
+    <div id="transactions">
+
+        <!-- TRANSAKSI 1 -->
+        <div class="transaction" data-index="0">
+            <strong>Transaksi 1</strong>
+            <button type="button" onclick="removeTransaction(this)">Hapus</button><br>
+
+            <label><input type="checkbox" name="items[0]" value="Facewash"> Facewash</label>
+            <label><input type="checkbox" name="items[0]" value="Bodywash"> Bodywash</label>
+            <label><input type="checkbox" name="items[0]" value="Barsoap"> Barsoap</label>
+            <label><input type="checkbox" name="items[0]" value="Handwash"> Handwash</label>
+            <label><input type="checkbox" name="items[0]" value="Shampoo"> Shampoo</label>
+            <label><input type="checkbox" name="items[0]" value="Conditioner"> Conditioner</label>
+            <label><input type="checkbox" name="items[0]" value="Faceserum"> Faceserum</label>
+            <label><input type="checkbox" name="items[0]" value="Bodylotion"> Bodylotion</label>
+            <label><input type="checkbox" name="items[0]" value="Hairserum"> Hairserum</label>
+            <label><input type="checkbox" name="items[0]" value="Bodyserum"> Bodyserum</label>
+            <hr>
+        </div>
+
+    </div>
+
+    <button type="button" onclick="addTransaction()">Tambah Transaksi</button>
+
+    <hr>
+
+    <h4>Atau Upload CSV</h4>
+    <input type="file" name="csv"><br><br>
+
+    <button type="submit">Simpan Dataset</button>
+</form>
+
+<script>
+    const products = [
+        "Facewash","Bodywash","Barsoap","Handwash",
+        "Shampoo","Conditioner","Faceserum",
+        "Bodylotion","Hairserum","Bodyserum"
+    ];
+
+    function addTransaction() {
+        const container = document.getElementById("transactions");
+        const div = document.createElement("div");
+        div.className = "transaction";
+        container.appendChild(div);
+        renderTransactions();
+    }
+
+    function removeTransaction(btn) {
+        btn.closest(".transaction").remove();
+        renderTransactions();
+    }
+
+    function renderTransactions() {
+        const txs = document.querySelectorAll(".transaction");
+        txs.forEach((div, i) => {
+            let html = `<strong>Transaksi ${i+1}</strong>
+        <button type="button" onclick="removeTransaction(this)">Hapus</button><br>`;
+            products.forEach(p => {
+                html += `<label>
+                <input type="checkbox" name="items[${i}]" value="${p}">
+                ${p}
+            </label>`;
+            });
+            html += "<hr>";
+            div.innerHTML = html;
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", renderTransactions);
+</script>
+
