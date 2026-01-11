@@ -1,38 +1,115 @@
 <h2>Dashboard</h2>
 
 <p>
-    Dataset terakhir:
+    Dataset terbaru:
     <b th:text="${datasetName}">-</b>
 </p>
 
 <ul>
-    <li>Total Transaksi:
-        <b th:text="${totalTransactions}">0</b>
-    </li>
-    <li>Total Produk Unik:
-        <b th:text="${totalProducts}">0</b>
-    </li>
+    <li>Total Transaksi: <b th:text="${totalTransactions}">0</b></li>
+    <li>Total Produk Unik: <b th:text="${totalProducts}">0</b></li>
 </ul>
 
 <hr>
 
 <h3>Rekomendasi Bundling Produk</h3>
 
-<div th:if="${#lists.isEmpty(bestBundling)}">
-    <p><i>Belum ada rekomendasi bundling.</i></p>
-</div>
-
-<table th:if="${!#lists.isEmpty(bestBundling)}"
-       border="1" cellpadding="4">
+<table th:if="${!#lists.isEmpty(bestBundling)}" border="1" cellpadding="4">
     <tr>
         <th>No</th>
         <th>Produk A</th>
         <th>Produk B</th>
     </tr>
-
-    <tr th:each="b, s : ${bestBundling}">
+    <tr th:each="b,s : ${bestBundling}">
         <td th:text="${s.index + 1}"></td>
         <td th:text="${b.antecedents}"></td>
         <td th:text="${b.consequents}"></td>
     </tr>
 </table>
+
+<hr>
+
+<h3>Visualisasi Hasil Analisis</h3>
+
+<!-- LOAD CHART.JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- FLEX CONTAINER (ANTI STRETCH) -->
+<div style="
+    display:flex;
+    gap:40px;
+    align-items:flex-start;
+    margin-bottom:30px;
+">
+
+    <!-- BAR CHART 1: POPULARITAS PRODUK -->
+    <div style="width:500px; height:330px;">
+        <h4>Popularitas Produk</h4>
+        <div style="height:200px;">
+            <canvas id="barChart"></canvas>
+        </div>
+    </div>
+
+    <!-- BAR CHART 2: BEST BUNDLING (CONFIDENCE) -->
+    <div style="width:380px; height:330px;">
+        <h4>Best Bundling Produk (Confidence)</h4>
+        <div style="height:200px;">
+            <canvas id="bundlingChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    /* =========================
+       BAR CHART: PRODUK
+       ========================= */
+    new Chart(document.getElementById('barChart'), {
+        type: 'bar',
+        data: {
+            labels: /*[[${productFrequency.keySet()}]]*/ [],
+            datasets: [{
+                label: 'Frekuensi Produk',
+                data: /*[[${productFrequency.values()}]]*/ [],
+                backgroundColor: '#3498db'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    /* =========================
+       BAR CHART: BEST BUNDLING
+       ========================= */
+    const bundlingData = /*[[${bestBundling}]]*/ [];
+
+    new Chart(document.getElementById('bundlingChart'), {
+        type: 'bar',
+        data: {
+            labels: bundlingData.map(b =>
+                b.antecedents + ' + ' + b.consequents
+            ),
+            datasets: [{
+                label: 'Confidence',
+                data: bundlingData.map(b => b.confidence),
+                backgroundColor: '#e67e22'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 1
+                }
+            }
+        }
+    });
+
+    /*]]>*/
+</script>

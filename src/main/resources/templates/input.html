@@ -1,40 +1,20 @@
 <h2>Input Dataset</h2>
 
-<form method="post" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data" id="datasetForm">
 
     <label>Nama Dataset</label><br>
     <input type="text" name="datasetName" required><br><br>
 
-    <h4>Input Manual Transaksi ( Pilih 2 - 4 item / Transaksi)</h4>
+    <h4>Input Manual Transaksi (Minimal 2 item / Transaksi)</h4>
 
-    <div id="transactions">
-
-        <!-- TRANSAKSI 1 -->
-        <div class="transaction" data-index="0">
-            <strong>Transaksi 1</strong>
-            <button type="button" onclick="removeTransaction(this)">Hapus</button><br>
-
-            <label><input type="checkbox" name="items[0]" value="Facewash"> Facewash</label>
-            <label><input type="checkbox" name="items[0]" value="Bodywash"> Bodywash</label>
-            <label><input type="checkbox" name="items[0]" value="Barsoap"> Barsoap</label>
-            <label><input type="checkbox" name="items[0]" value="Handwash"> Handwash</label>
-            <label><input type="checkbox" name="items[0]" value="Shampoo"> Shampoo</label>
-            <label><input type="checkbox" name="items[0]" value="Conditioner"> Conditioner</label>
-            <label><input type="checkbox" name="items[0]" value="Faceserum"> Faceserum</label>
-            <label><input type="checkbox" name="items[0]" value="Bodylotion"> Bodylotion</label>
-            <label><input type="checkbox" name="items[0]" value="Hairserum"> Hairserum</label>
-            <label><input type="checkbox" name="items[0]" value="Bodyserum"> Bodyserum</label>
-            <hr>
-        </div>
-
-    </div>
+    <div id="transactions"></div>
 
     <button type="button" onclick="addTransaction()">Tambah Transaksi</button>
 
     <hr>
 
     <h4>Atau Upload CSV</h4>
-    <input type="file" name="csv"><br><br>
+    <input type="file" name="csv" id="csvInput"><br><br>
 
     <button type="submit">Simpan Dataset</button>
 </form>
@@ -46,35 +26,108 @@
         "Bodylotion","Hairserum","Bodyserum"
     ];
 
+    const container = document.getElementById("transactions");
+    const csvInput = document.getElementById("csvInput");
+
+    /* ==============================
+       TAMBAH TRANSAKSI
+       ============================== */
     function addTransaction() {
-        const container = document.getElementById("transactions");
         const div = document.createElement("div");
         div.className = "transaction";
         container.appendChild(div);
         renderTransactions();
     }
 
+    /* ==============================
+       HAPUS TRANSAKSI
+       ============================== */
     function removeTransaction(btn) {
         btn.closest(".transaction").remove();
         renderTransactions();
     }
 
+    /* ==============================
+       RENDER ULANG (RENUMBER)
+       ============================== */
     function renderTransactions() {
         const txs = document.querySelectorAll(".transaction");
-        txs.forEach((div, i) => {
-            let html = `<strong>Transaksi ${i+1}</strong>
-        <button type="button" onclick="removeTransaction(this)">Hapus</button><br>`;
+
+        txs.forEach((div, index) => {
+
+            // simpan state checkbox
+            const checkedValues = Array.from(
+                div.querySelectorAll("input[type=checkbox]:checked")
+            ).map(cb => cb.value);
+
+            let html = `
+                <strong>Transaksi ${index + 1}</strong>
+                <button type="button" onclick="removeTransaction(this)">Hapus</button><br>
+            `;
+
             products.forEach(p => {
-                html += `<label>
-                <input type="checkbox" name="items[${i}]" value="${p}">
-                ${p}
-            </label>`;
+                const checked = checkedValues.includes(p) ? "checked" : "";
+                html += `
+                    <label>
+                        <input type="checkbox" name="items[${index}]" value="${p}" ${checked}>
+                        ${p}
+                    </label>
+                `;
             });
+
             html += "<hr>";
             div.innerHTML = html;
         });
     }
 
-    document.addEventListener("DOMContentLoaded", renderTransactions);
+    /* ==============================
+       CSV ↔ MANUAL (MUTUAL EXCLUSIVE)
+       ============================== */
+    csvInput.addEventListener("change", function () {
+        const checkboxes = container.querySelectorAll("input[type=checkbox]");
+        if (csvInput.files.length > 0) {
+            checkboxes.forEach(cb => {
+                cb.checked = false;
+                cb.disabled = true;
+            });
+        } else {
+            checkboxes.forEach(cb => cb.disabled = false);
+        }
+    });
+
+    container.addEventListener("change", function () {
+        const checked = container.querySelectorAll("input[type=checkbox]:checked");
+        if (checked.length > 0) {
+            csvInput.value = "";
+            csvInput.disabled = true;
+        } else {
+            csvInput.disabled = false;
+        }
+    });
+
+    /* ==============================
+       VALIDASI SUBMIT
+       ============================== */
+    document.getElementById("datasetForm").addEventListener("submit", function (e) {
+
+        // CSV dipilih → langsung submit
+        if (csvInput.files.length > 0) return;
+
+        const txs = document.querySelectorAll(".transaction");
+        let valid = false;
+
+        txs.forEach(tx => {
+            const checked = tx.querySelectorAll("input[type=checkbox]:checked");
+            if (checked.length >= 2) valid = true;
+        });
+
+        if (!valid) {
+            alert("Pilih minimal 2 item pada salah satu transaksi atau gunakan upload CSV.");
+            e.preventDefault();
+        }
+    });
+
+    /* TRANSAKSI PERTAMA OTOMATIS */
+    addTransaction();
 </script>
 

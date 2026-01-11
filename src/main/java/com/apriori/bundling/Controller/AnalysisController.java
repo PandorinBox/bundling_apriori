@@ -38,7 +38,8 @@ public class AnalysisController {
     @PostMapping
     public String analyze(@RequestParam Long datasetId, Model model) {
 
-        List<Transaction> txs = transactionRepo.findByDatasetId(datasetId);
+        List<Transaction> txs =
+                transactionRepo.findByDatasetId(datasetId);
 
         /* ======================
            NORMALISASI TRANSAKSI
@@ -58,6 +59,29 @@ public class AnalysisController {
             if (!items.isEmpty()) {
                 transactions.add(items);
             }
+        }
+
+        /* ======================
+           FREKUENSI ITEM (BARU)
+           ====================== */
+        Map<String, Integer> itemFrequency = new TreeMap<>();
+
+        for (List<String> tx : transactions) {
+            Set<String> unique = new HashSet<>(tx);
+            for (String item : unique) {
+                itemFrequency.merge(item, 1, Integer::sum);
+            }
+        }
+
+        Map<String, Double> itemSupport = new LinkedHashMap<>();
+        int totalTx = transactions.size();
+
+        for (String item : itemFrequency.keySet()) {
+            double support = itemFrequency.get(item) / (double) totalTx;
+            itemSupport.put(
+                    item,
+                    Math.round(support * 1000.0) / 1000.0
+            );
         }
 
         /* ======================
@@ -86,7 +110,6 @@ public class AnalysisController {
 
         /* ======================
            BUNDLING TERBAIK
-           (SUBSET DARI RULES)
            ====================== */
         List<RuleResult> bestBundling = new ArrayList<>(rules);
 
@@ -98,7 +121,6 @@ public class AnalysisController {
             return c;
         });
 
-        // Ambil 3 terbaik saja
         if (bestBundling.size() > 3) {
             bestBundling = bestBundling.subList(0, 3);
         }
@@ -109,6 +131,11 @@ public class AnalysisController {
         model.addAttribute("datasets", datasetRepo.findAll());
         model.addAttribute("items", allItems);
         model.addAttribute("matrix", matrix);
+
+        // BARU
+        model.addAttribute("itemFrequency", itemFrequency);
+        model.addAttribute("itemSupport", itemSupport);
+
         model.addAttribute("frequentItemsets", frequentItemsets);
         model.addAttribute("rules", rules);
         model.addAttribute("bestBundling", bestBundling);

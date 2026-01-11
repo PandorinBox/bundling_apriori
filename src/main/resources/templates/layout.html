@@ -2,68 +2,15 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Apriori Bundling</title>
-    <style>
-        * {
-            box-sizing: border-box;
-        }
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-
-        /* FLEX CONTAINER */
-        .wrapper {
-            display: flex;
-            align-items: stretch;
-        }
-
-        /* SIDEBAR */
-        .sidebar {
-            width: 220px;
-            background: #2c3e50;
-            color: white;
-            padding: 15px;
-
-            position: sticky;
-            top: 0;
-
-            height: 100vh;          /* sesuai layar browser */
-            overflow-y: auto;
-        }
-
-        .sidebar h3 {
-            margin-top: 0;
-        }
-
-        .sidebar a {
-            color: white;
-            display: block;
-            margin: 10px 0;
-            text-decoration: none;
-        }
-
-        /* TANGGAL */
-        .today-date {
-            margin: 10px 0 15px 0;
-            font-size: 13px;
-            color: #ecf0f1;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            padding-bottom: 8px;
-        }
-
-        /* CONTENT */
-        .content {
-            flex: 1;
-            padding: 20px;
-            background: #ffffff;
-        }
-    </style>
+    <!-- CSS EKSTERNAL -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 
 <div class="wrapper">
 
+    <!-- SIDEBAR -->
     <div class="sidebar">
         <h3>MENU</h3>
 
@@ -73,8 +20,10 @@
         <a href="/dashboard">Dashboard</a>
         <a href="/input">Input Dataset</a>
         <a href="/analysis">Analisis</a>
+        <a href="/dataset">Kelola Dataset</a>
     </div>
 
+    <!-- CONTENT -->
     <div class="content">
         <!-- INCLUDE HALAMAN -->
         <div th:replace="${page}"></div>

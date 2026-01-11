@@ -1,0 +1,59 @@
+<h2>Detail Dataset</h2>
+
+<p>
+    Nama Dataset:
+    <b th:text="${dataset.name}">Dataset</b>
+</p>
+
+<hr>
+
+<h3>Daftar Transaksi</h3>
+
+<table border="1" cellpadding="5" cellspacing="0">
+    <tr>
+        <th>No</th>
+        <th>Item Transaksi</th>
+        <th>Aksi</th>
+    </tr>
+
+    <tr th:if="${#lists.isEmpty(transactions)}">
+        <td colspan="3"><i>Belum ada transaksi.</i></td>
+    </tr>
+
+    <tr th:each="t, s : ${transactions}">
+        <td th:text="${s.index + 1}">1</td>
+        <td th:text="${t.items}">Facewash,Bodywash</td>
+        <td>
+            <form th:action="@{/dataset/tx/{id}/delete(id=${t.id})}"
+                  method="post"
+                  onsubmit="return confirm('Hapus transaksi ini?')">
+                <button type="submit">Hapus</button>
+            </form>
+        </td>
+    </tr>
+</table>
+
+<hr>
+
+<h3>Tambah Transaksi Baru</h3>
+
+<p style="font-size: 13px;">
+    Masukkan item dipisahkan koma <br>
+    <i>Contoh: Facewash,Bodywash,Shampoo</i>
+</p>
+
+<form th:action="@{/dataset/{id}/add(id=${dataset.id})}"
+      method="post">
+
+    <input type="text"
+           name="items"
+           style="width:300px;"
+           placeholder="Facewash,Bodywash"
+           required>
+
+    <button type="submit">Tambah</button>
+</form>
+
+<hr>
+
+<a href="/dataset">← Kembali ke Kelola Dataset</a>

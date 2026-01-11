@@ -50,6 +50,8 @@ public class DashboardController {
             model.addAttribute("totalTransactions", 0);
             model.addAttribute("totalProducts", 0);
             model.addAttribute("bestBundling", Collections.emptyList());
+            model.addAttribute("productFrequency", Collections.emptyMap());
+            model.addAttribute("bundlingCount", Collections.emptyMap());
             model.addAttribute("page", "dashboard");
             return "layout";
         }
@@ -75,7 +77,7 @@ public class DashboardController {
             }
         }
 
-        /* === JALANKAN APRIORI JIKA ADA TRANSAKSI === */
+        /* === JALANKAN APRIORI (SEKALI SAJA) === */
         List<RuleResult> rules = new ArrayList<>();
         if (!transactions.isEmpty()) {
             rules = aprioriService.analyze(transactions);
@@ -86,9 +88,35 @@ public class DashboardController {
         bestBundling.sort((a, b) ->
                 Double.compare(b.confidence, a.confidence)
         );
-
         if (bestBundling.size() > 3) {
             bestBundling = bestBundling.subList(0, 3);
+        }
+
+        /* ======================================
+           DATA BAR CHART
+           (FREKUENSI PRODUK)
+           ====================================== */
+        Map<String, Integer> productFrequency = new LinkedHashMap<>();
+        for (List<String> tx : transactions) {
+            for (String item : tx) {
+                productFrequency.put(
+                        item,
+                        productFrequency.getOrDefault(item, 0) + 1
+                );
+            }
+        }
+
+        /* ======================================
+           DATA PIE CHART
+           (BUNDLING TERBAIK)
+           ====================================== */
+        Map<String, Integer> bundlingCount = new LinkedHashMap<>();
+        for (RuleResult r : bestBundling) {
+            String label = r.antecedents + " + " + r.consequents;
+            bundlingCount.put(
+                    label,
+                    bundlingCount.getOrDefault(label, 0) + 1
+            );
         }
 
         /* === KIRIM KE VIEW === */
@@ -96,6 +124,8 @@ public class DashboardController {
         model.addAttribute("totalTransactions", transactions.size());
         model.addAttribute("totalProducts", allItems.size());
         model.addAttribute("bestBundling", bestBundling);
+        model.addAttribute("productFrequency", productFrequency);
+        model.addAttribute("bundlingCount", bundlingCount);
         model.addAttribute("page", "dashboard");
 
         return "layout";

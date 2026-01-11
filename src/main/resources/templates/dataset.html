@@ -1,0 +1,24 @@
+<h2>Kelola Dataset</h2>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>No</th>
+        <th>Nama Dataset</th>
+        <th>Aksi</th>
+    </tr>
+
+    <tr th:each="d, s : ${datasets}">
+        <td th:text="${s.index + 1}">1</td>
+        <td th:text="${d.name}">Dataset</td>
+        <td>
+            <a th:href="@{/dataset/{id}(id=${d.id})}">Detail</a>
+
+            <form th:action="@{/dataset/{id}/delete(id=${d.id})}"
+                  method="post"
+                  style="display:inline"
+                  onsubmit="return confirm('Hapus dataset ini?')">
+                <button type="submit">Hapus</button>
+            </form>
+        </td>
+    </tr>
+</table>

@@ -14,9 +14,32 @@
 <hr>
 
 <!-- ===================== -->
-<!-- 1. MATRIX TRANSAKSI -->
+<!-- 1. FREKUENSI ITEM -->
 <!-- ===================== -->
-<h3>1. Matriks Transaksi Biner</h3>
+<h3>1. Frekuensi Item dalam Dataset</h3>
+
+<table border="1" cellpadding="4">
+    <tr>
+        <th>No</th>
+        <th>Item</th>
+        <th>Jumlah Transaksi</th>
+        <th>Support</th>
+    </tr>
+
+    <tr th:each="item, stat : ${itemFrequency}">
+        <td th:text="${stat.index + 1}"></td>
+        <td th:text="${item.key}"></td>
+        <td th:text="${item.value}"></td>
+        <td th:text="${itemSupport[item.key]}"></td>
+    </tr>
+</table>
+
+<hr>
+
+<!-- ===================== -->
+<!-- 2. MATRIX TRANSAKSI -->
+<!-- ===================== -->
+<h3>2. Matriks Transaksi Biner</h3>
 
 <table border="1" cellpadding="4">
     <tr>
@@ -29,13 +52,12 @@
     </tr>
 </table>
 
-
 <hr>
 
 <!-- ===================== -->
-<!-- 2. FREQUENT ITEMSETS -->
+<!-- 3. FREQUENT ITEMSETS -->
 <!-- ===================== -->
-<h3>2. Frequent Itemsets</h3>
+<h3>3. Frequent Itemsets</h3>
 
 <table border="1" cellpadding="4">
     <tr>
@@ -51,9 +73,9 @@
 <hr>
 
 <!-- ===================== -->
-<!-- 3. ASSOCIATION RULES -->
+<!-- 4. ASSOCIATION RULES -->
 <!-- ===================== -->
-<h3>3. Association Rules</h3>
+<h3>4. Association Rules</h3>
 
 <table border="1" cellpadding="4">
     <tr>
@@ -77,18 +99,17 @@
     </tr>
 </table>
 
-
 <hr>
 
-<hr>
+<!-- ===================== -->
+<!-- 5. BUNDLING TERBAIK -->
+<!-- ===================== -->
+<h3>5. Pilihan Bundling Produk Terbaik</h3>
 
-<hr>
-
-<h3>4. Pilihan Bundling Produk Terbaik</h3>
 <p>
     Berdasarkan association rules yang diperoleh pada tabel sebelumnya,
     berikut merupakan rangkuman pasangan produk yang direkomendasikan
-    untuk dibundling.
+    untuk dibundling berdasarkan nilai confidence tertinggi.
 </p>
 
 <table border="1" cellpadding="4">
@@ -104,5 +125,3 @@
         <td th:text="${b.consequents}"></td>
     </tr>
 </table>
-
-
