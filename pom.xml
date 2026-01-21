@@ -19,6 +19,7 @@
     <name>bundling</name>
     <description>Apriori Bundling Spring Boot</description>
 
+    <packaging>jar</packaging>
     <properties>
         <java.version>21</java.version>
     </properties>
